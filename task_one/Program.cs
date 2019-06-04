@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,43 +17,78 @@ namespace task_one
             Point c = new Point();
             Point d = new Point();
 
-            Console.WriteLine(@"Выберите способ задания координат для точек треугольника:
-                                                                1 - с клавиатуры
-                                                                2 - рандомно");
-            int option = EnterANumber();
-            switch(option)
+            #region menu
+            //Console.WriteLine(@"Выберите способ задания координат для точек треугольника:
+            //                                                    1 - с клавиатуры
+            //                                                    2 - рандомно");
+            //int option = EnterANumber();
+            //switch(option)
+            //{
+            //    case 1:
+            //        Console.ForegroundColor = ConsoleColor.Yellow;
+            //        Console.WriteLine("Координаты точки А");
+            //        Console.ResetColor();
+            //        a = EnterCoordinates();
+            //        Console.ForegroundColor = ConsoleColor.Yellow;
+            //        Console.WriteLine("Координаты точки B");
+            //        Console.ResetColor();
+            //        b = EnterCoordinates();
+            //        Console.ForegroundColor = ConsoleColor.Yellow;
+            //        Console.WriteLine("Координаты точки C");
+            //        Console.ResetColor();
+            //        c = EnterCoordinates();
+            //        Console.Clear();
+            //        break;
+            //    case 2:
+            //        a = new Point(rand.Next(-100, 100), rand.Next(-100, 100));
+            //        b = new Point(rand.Next(-100, 100), rand.Next(-100, 100));
+            //        c = new Point(rand.Next(-100, 100), rand.Next(-100, 100));
+            //        break;
+            //}
+            #endregion
+
+            string line1 = "";
+            string line2 = "";
+            string line3 = "";
+            string line4 = "";
+            StreamReader read = new StreamReader("INPUT.txt");
+            try
             {
-                case 1:
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("Координаты точки А");
-                    Console.ResetColor();
-                    a = EnterCoordinates();
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("Координаты точки B");
-                    Console.ResetColor();
-                    b = EnterCoordinates();
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("Координаты точки C");
-                    Console.ResetColor();
-                    c = EnterCoordinates();
-                    break;
-                case 2:
-                    a = new Point(rand.Next(-100, 100), rand.Next(-100, 100));
-                    b = new Point(rand.Next(-100, 100), rand.Next(-100, 100));
-                    c = new Point(rand.Next(-100, 100), rand.Next(-100, 100));
-                    break;
+                while (!read.EndOfStream)
+                {
+                    line1 = read.ReadLine();
+                    line2 = read.ReadLine();
+                    line3 = read.ReadLine();
+                    line4 = read.ReadLine();
+                }
             }
+            catch (Exception)
+            {
+                Console.WriteLine("Файл не был создан!");
+            }
+            read.Close();
+
+            a = Separate(line1);
+            b = Separate(line2);
+            c = Separate(line3);
+            d = Separate(line4);
 
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine($"\nВаш треугольник с вершинами A({a.X}, {a.Y}), B({b.X}, {b.Y}), C({c.X}, {c.Y}).");
+            
+
+            //Console.WriteLine("\nВведите координаты точки D:");
+            //d = EnterCoordinates();
+
+            Console.WriteLine($"Точка D({d.X}, {d.Y}).");
             Console.ResetColor();
 
-            Console.WriteLine("\nВведите координаты точки D:");
-            d = EnterCoordinates();
-
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(OnTheSameSide(a, b, c, d) && OnTheSameSide(b, c, a, d) &&
-             OnTheSameSide(c, a, b, d) ? "\nТочка принадлежит треугольнику АВС." : "\nТочка не принадлежит треугольнику АВС.");
+            bool ok = OnTheSameSide(a, b, c, d) && OnTheSameSide(b, c, a, d) && OnTheSameSide(c, a, b, d);
+            StreamWriter write = new StreamWriter("OUTPUT.txt");
+            if (ok) write.WriteLine("In"); else write.WriteLine("Out");
+            write.Close();
+            Console.WriteLine(ok ? "\nТочка принадлежит треугольнику АВС." : "\nТочка не принадлежит треугольнику АВС.");
             Console.ResetColor();
             Console.ReadLine();
         }
@@ -74,6 +110,13 @@ namespace task_one
             Console.Write("Введите у:   ");
             int y = EnterANumber();
             return new Point(x, y);
+        }
+
+
+        public static Point Separate(string l)
+        {
+            string[] meanings = l.Split(' ');
+            return new Point(Convert.ToInt32(meanings[0]), Convert.ToInt32(meanings[1]));
         }
 
         public static int EnterANumber() //ввод a number
